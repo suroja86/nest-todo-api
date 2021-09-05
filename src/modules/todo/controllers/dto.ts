@@ -1,9 +1,9 @@
 export class CreateDto {
   title: string;
-  isCopleted?: boolean;
+  isCompleted?: boolean;
 }
 
 export class UpdateDto {
   title: string;
-  isCopleted?: boolean;
+  isCompleted?: boolean;
 }
