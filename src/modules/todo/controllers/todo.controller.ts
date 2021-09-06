@@ -15,9 +15,8 @@ import { Todo } from '../entities/todo.entity';
 
 @Controller('rest/todo')
 export class TodoController {
-  constructor(private readonly todoService: TodoService) {
+  constructor(private readonly todoService: TodoService) {}
 
-  }
   @Get()
   getAllAction(): Promise<Todo[]> {
     return this.todoService.findAll();
@@ -25,9 +24,9 @@ export class TodoController {
 
   @Get(':id')
   async getOneAction(@Param('id') id: string): Promise<Todo> {
-    const todo = this.todoService.findOne(id);
+    const todo = await this.todoService.findOne(id);
     //do not work if, in todo Promise { pending }
-    if (todo == undefined) {
+    if (todo === undefined) {
       throw new HttpException(
         'Todo with id = ' + id + ' not exists',
         HttpStatus.NOT_FOUND,
@@ -52,7 +51,7 @@ export class TodoController {
     @Body() { title, isCompleted = false }: UpdateDto,
   ): Promise<Todo> {
     const todo = await this.todoService.findOne(id);
-    if (todo == undefined) {
+    if (todo === undefined) {
       throw new HttpException(
         'Todo with id = ' + id + ' not exists',
         HttpStatus.NOT_FOUND,
@@ -64,7 +63,17 @@ export class TodoController {
   }
 
   @Delete(':id')
-  deleteAction(@Param('id') id: string): Promise<void> {
-    return this.todoService.remove(id);
+  async deleteAction(@Param('id') id: string): Promise<{ success: boolean }> {
+    const todo = await this.todoService.findOne(id);
+    if (todo === undefined) {
+      throw new HttpException(
+        'Todo with id = ' + id + ' not exists',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await this.todoService.remove(id);
+    return {
+      success: true,
+    };
   }
 }
