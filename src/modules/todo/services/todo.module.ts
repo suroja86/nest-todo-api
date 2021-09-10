@@ -14,7 +14,7 @@ export class TodoService {
     return this.todoRepository.find();
   }
 
-  findOne(id: string): Promise<Todo> {
+  findOne(id: number): Promise<Todo> {
     return this.todoRepository.findOne(id);
   }
 
@@ -27,7 +27,7 @@ export class TodoService {
     return this.todoRepository.save(todo);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     await this.todoRepository.delete(id);
   }
 }

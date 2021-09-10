@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   HttpException,
-  HttpStatus,
+  HttpStatus, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { CreateDto, UpdateDto } from './dto';
 import { TodoService } from '../services/todo.module';
@@ -27,11 +27,11 @@ export class TodoController {
   }
 
   @Get(':id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiResponse({ status: 200, description: 'Get todo by id', type: Todo })
   @ApiResponse({ status: 404, description: 'Not Found', type: NotFoundResponse })
-  async getOneAction(@Param('id') id: string): Promise<Todo> {
+  async getOneAction(@Param('id') id: number): Promise<Todo> {
     const todo = await this.todoService.findOne(id);
-    //do not work if, in todo Promise { pending }
     if (todo === undefined) {
       throw new HttpException(
         'Todo with id = ' + id + ' not exists',
@@ -54,10 +54,11 @@ export class TodoController {
   }
 
   @Put(':id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiResponse({ status: 200, description: 'Update todo by id', type: Todo })
   @ApiBody({ type: UpdateDto })
   async updateAction(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() { title, isCompleted = false }: UpdateDto,
   ): Promise<Todo> {
     const todo = await this.todoService.findOne(id);
@@ -73,9 +74,10 @@ export class TodoController {
   }
 
   @Delete(':id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   @ApiResponse({ status: 200, description: 'Delete todo by id' })
   @ApiResponse({ status: 404, description: 'Not Found', type: NotFoundResponse })
-  async deleteAction(@Param('id') id: string): Promise<{ success: boolean }> {
+  async deleteAction(@Param('id') id: number): Promise<{ success: boolean }> {
     const todo = await this.todoService.findOne(id);
     if (todo === undefined) {
       throw new HttpException(
